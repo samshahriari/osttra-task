@@ -29,7 +29,7 @@ def index():
     return "Hello, World!"
 
 
-@app.route("/messages")
+@app.route("/messages/unread", methods=['GET'])
 def get_unread_messages():
     unread_messages = Message.query.filter_by(is_read=False).all()
     return_msg = []
