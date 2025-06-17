@@ -21,6 +21,12 @@ def index():
     return "Hello, World!"
 
 
+@app.route("/messages")
+def get_unread_messages():
+    unread_messages = Message.query.filter_by(is_read=False).all()
+    return str(len(unread_messages))
+
+
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
