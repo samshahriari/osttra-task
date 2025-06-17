@@ -1,5 +1,6 @@
 from flask import Flask, request
 from flask_sqlalchemy import SQLAlchemy
+import datetime
 app = Flask(__name__)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'
@@ -11,9 +12,10 @@ class Message(db.Model):
     recipient = db.Column(db.String(50), nullable=False)
     content = db.Column(db.String(200), nullable=False)
     is_read = db.Column(db.Boolean, default=False)
+    timestamp = db.Column(db.DateTime)
 
     def __repr__(self):
-        return f"Message {self.recipient}: {self.content}"
+        return f"Message {self.message_id} at {self.timestamp} to {self.recipient}: {self.content}"
 
 
 @app.route("/")
@@ -34,7 +36,7 @@ def get_unread_messages():
 
 @app.route("/messages", methods=['POST'])
 def add_message():
-    message = Message(recipient=request.json['recipient'], content=request.json['content'])
+    message = Message(recipient=request.json['recipient'], content=request.json['content'], timestamp=datetime.datetime.now())
     db.session.add(message)
     db.session.commit()
     return str(message.message_id)
