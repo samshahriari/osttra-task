@@ -14,8 +14,14 @@ class Message(db.Model):
     is_read = db.Column(db.Boolean, default=False)
     timestamp = db.Column(db.DateTime)
 
-    def __repr__(self):
-        return f"Message {self.message_id} at {self.timestamp} to {self.recipient}: {self.content}"
+    def get_dict(self):
+        return {
+            'message_id': self.message_id,
+            'recipient': self.recipient,
+            'content': self.content,
+            'is_read': self.is_read,
+            'timestamp': self.timestamp.isoformat()
+        }
 
 
 @app.route("/")
@@ -28,9 +34,9 @@ def get_unread_messages():
     unread_messages = Message.query.filter_by(is_read=False).all()
     return_msg = []
     for message in unread_messages:
+        return_msg.append(message.get_dict())
         message.is_read = True
         db.session.commit()
-        return_msg.append(str(message))
     return return_msg
 
 
