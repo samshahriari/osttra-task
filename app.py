@@ -74,6 +74,18 @@ def delete_multiple_messages():
     return f"Messages {', '.join(map(str, deleted_ids))} deleted successfully!"
 
 
+@app.route("/messages", methods=['GET'])
+def get_multiple_messages():
+    from_index = request.args.get('from_index', type=int, default=None)
+    to_index = request.args.get('to_index', type=int, default=None)
+
+    messages = Message.query.order_by(Message.timestamp).slice(from_index, to_index)
+    return_msg = []
+    for message in messages:
+        return_msg.append(message.get_dict())
+    return return_msg
+
+
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
