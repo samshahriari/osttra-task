@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, jsonify
 from flask_sqlalchemy import SQLAlchemy
 app = Flask(__name__)
 
@@ -24,7 +24,12 @@ def index():
 @app.route("/messages")
 def get_unread_messages():
     unread_messages = Message.query.filter_by(is_read=False).all()
-    return str(len(unread_messages))
+    return_msg = []
+    for message in unread_messages:
+        message.is_read = True
+        db.session.commit()
+        return_msg.append(str(message))
+    return return_msg
 
 
 if __name__ == '__main__':
