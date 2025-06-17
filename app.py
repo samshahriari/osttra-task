@@ -40,6 +40,16 @@ def add_message():
     return str(message.message_id)
 
 
+@app.route("/messages/<message_id>", methods=['DELETE'])
+def delete_single_message(message_id):
+    message = Message.query.get(message_id)
+    if not message:
+        return f"Message {message_id} not found!"
+    db.session.delete(message)
+    db.session.commit()
+    return f"Message {message_id} deleted successfully!"
+
+
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
