@@ -52,6 +52,22 @@ def delete_single_message(message_id):
     return f"Message {message_id} deleted successfully!"
 
 
+@app.route("/messages", methods=['DELETE'])
+def delete_multiple_messages():
+    message_ids = request.json.get('message_ids', None)
+    if not message_ids or not isinstance(message_ids, list):
+        return "'message_ids' must be a list!"
+    messages = Message.query.filter(Message.message_id.in_(message_ids)).all()
+    if not messages:
+        return "No messages found for the specified IDs!"
+    deleted_ids = []
+    for message in messages:
+        deleted_ids.append(message.message_id)
+        db.session.delete(message)
+    db.session.commit()
+    return f"Messages {', '.join(map(str, deleted_ids))} deleted successfully!"
+
+
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
